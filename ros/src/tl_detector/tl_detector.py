@@ -116,23 +116,25 @@ class TLDetector(object):
 
     def get_light_state(self, light):
         """Determines the current color of the traffic light
+        ##TODO: only operate the classifier or this node in the tl range
         Args:
             light (TrafficLight): light to classify
         Returns:
             int: ID of traffic light color (specified in styx_msgs/TrafficLight)
         """
-        '''
+        
         if(not self.has_image):
             self.prev_light_loc = None
             return False
 
         cv_image = self.bridge.imgmsg_to_cv2(self.camera_image, "bgr8")
+        cv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2RGB)
 
+        tl = TrafficLight.UNKNOWN
 
-        #Get classification
-        return self.light_classifier.get_classification(cv_image)
-        '''
-        return light.state
+        if self.light_classifier is not None: 
+            tl = self.light_classifier.get_classification(cv_image)
+        return tl
 
     def process_traffic_lights(self):
         """Finds closest visible traffic light, if one exists, and determines its
