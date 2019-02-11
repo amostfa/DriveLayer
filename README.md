@@ -1,6 +1,53 @@
-This is the project repo for the final project of the Udacity Self-Driving Car Nanodegree: Programming a Real Self-Driving Car. For more information about the project, see the project introduction [here](https://classroom.udacity.com/nanodegrees/nd013/parts/6047fe34-d93c-4f50-8336-b70ef10cb4b2/modules/e1a23b06-329a-4684-a717-ad476f0d8dff/lessons/462c933d-9f24-42d3-8bdc-a08a5fc866e4/concepts/5ab4b122-83e6-436d-850f-9f4d26627fd9).
+This is the project repo for the final project of the Udacity Self-Driving Car Nanodegree: Programming a Real Self-Driving Car by the team  **Drive Layer**. We built ROS nodes to implement core functionality of the autonomous vehicle system, including traffic light detection, control, and waypoint following.
 
-Please use **one** of the two installation options, either native **or** docker installation.
+![carla 1](./imgs/carla1.jpg)
+![carla 2](./imgs/carla2.png)
+
+### Team members 
+
+* Ahmed Mahmoud  
+  a.mostfa@gmail.com
+* Ahmed Zaitoon  
+  ahmed.zaitoon91@gmail.com
+* Mohamed Alaa Eldin  
+  mohammed.alaa92@gmail.com
+     
+
+
+### System architecture
+The following is a system architecture diagram showing the ROS nodes and topics used in the project.  
+
+![system architecture](./imgs/system_architecture.png)
+*Note* : For this project, the obstacle detection node is not implemented.
+
+### Perception subsystem 
+This subsystem is responsible for perceiving the environment around the vehicle and and publishing observations to other subsystems such as determining the state of upcoming traffic lights and sending their status to other subsystems.
+
+### Planning subsystem
+This subsystem plans a trajectory for the vehicle to follow by publishing a fixed number of waypoints ahead of the vehicle with the correct target velocities depending on the vehicle's position along with the state of upcoming traffic lights.
+
+### Control subsystem
+This subsystem publishes the control commands for the vehicle in terms of steering , throttle and brake commands based on the list of waypoints.
+
+**We have implemented the following nodes :**
+
+#### 1. Traffic Light Detetction Node  
+It's implemented in `tl_detector.py`. This node takes in data from the `/image_color, /current_pose`, and `/base_waypoints` topics and publishes the locations to stop for red traffic lights to the `/traffic_waypoint topic`.The `/current_pose` topic provides the vehicle's current position, and `/base_waypoints` provides a complete list of waypoints the car will be following.  
+
+![traffic lights detection node](./imgs/traffic_light_detection_node.png)
+
+#### 2. Waypoint Updater Node
+It's implemented in `waypoint_updater.py`. The purpose of this node is to update the target velocity property of each waypoint based on the vehicle's current position and traffic lights detection data. This node will subscribe to the `/base_waypoints`, `/current_pose`, `/obstacle_waypoint`, and `/traffic_waypoint` topics, and publish a list of waypoints ahead of the car with target velocities to the `/final_waypoints` topic.
+
+![waypoint updater node](./imgs/waypoint_updater_node.png)
+
+#### 3. DBW node
+ It's implemented in `dbw_node.py`.Carla is equipped with a drive-by-wire (dbw) system, meaning the throttle, brake, and steering have electronic control. This node subscribes to the `/current_velocity` topic along with the `/twist_cmd` topic to receive target linear and angular velocities. Additionally, It will subscribe to `/vehicle/dbw_enabled`, which indicates if the car is under drive-by-wire or driver control. This node will publish throttle, brake, and steering commands to the `/vehicle/throttle_cmd`, `/vehicle/brake_cmd`, and `/vehicle/steering_cmd` topics.`dbw_node.py` is set up to publish steering, throttle, and brake commands at 50hz. The DBW system on Carla expects messages at this frequency, and will disengage (reverting control back to the driver) if control messages are published at less than 10hz. This is a safety feature on the car intended to return control to the driver if the software system crashes.
+
+ ![dbw node](./imgs/dbw_node.png)
+
+
+Please use **one** of the two installation options, either native **or** docker installation as suggested by Udacity.
 
 ### Native Installation
 
@@ -38,9 +85,6 @@ To set up port forwarding, please refer to the [instructions from term 2](https:
 ### Usage
 
 1. Clone the project repository
-```bash
-git clone https://github.com/udacity/CarND-Capstone.git
-```
 
 2. Install python dependencies
 ```bash
